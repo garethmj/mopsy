@@ -1,0 +1,33 @@
+require 'mopsy/version'
+require 'mopsy/conf'
+require 'mopsy/cli'
+require 'mopsy/concerns/logging'
+require 'mopsy/handlers/loader'
+require 'mopsy/handlers/handler'
+require 'mopsy/handlers/run_group'
+require 'mopsy/rabbit/queue'
+require 'mopsy/runner'
+
+module Mopsy
+  extend self
+
+  def configure
+    @conf         = Mopsy::Conf.new
+    @logger       = Logger.new(STDOUT)
+    @logger.level = Logger::DEBUG
+
+    Handlers::Handler.configure_logger(@logger)
+  end
+
+  def conf
+    @conf
+  end
+
+  def logger=(logger)
+    @logger = logger
+  end
+
+  def logger
+    @logger
+  end
+end

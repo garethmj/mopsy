@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'mopsy'
+
+Mopsy.configure
+Mopsy::CLI.start
