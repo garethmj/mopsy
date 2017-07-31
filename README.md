@@ -1,8 +1,8 @@
 # Mopsy
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/mopsy`. To experiment with that code, run `bin/console` for an interactive prompt.
+Mopsy is yet another Ruby/RabbitMQ framework. I started building it because I wanted one framework that was capable of both background job style message processing _and_ RPC message handling. I also wanted it to be less opinionated about things than Hutch, for example. Or do I just mean opinionated in my opinion? I'm not sure...
 
-TODO: Delete this and the text above, and describe your gem
+...Anyway. Best not to try an use it just yet. It's still in dev. Ta very much.
 
 ## Installation
 
@@ -22,7 +22,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Well, don't just yet.
 
 ## Development
 
@@ -38,6 +38,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/[USERN
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
 
-## Code of Conduct
-
-Everyone interacting in the Mopsy project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/mopsy/blob/master/CODE_OF_CONDUCT.md).
