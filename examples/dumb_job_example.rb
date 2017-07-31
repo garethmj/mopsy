@@ -1,5 +1,5 @@
 class DumbJobExample
-  include Mopsy::Handlers::Handler
+  include Mopsy::Handlers::JobHandler
 
   subscribe 'example.work.queue'
 

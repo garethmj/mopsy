@@ -1,8 +1,6 @@
 module Mopsy
   module Handlers
     module Handler
-      include Mopsy::Concerns::Logging
-
       attr_reader :pool
 
       def initialize(queue = nil, pool = nil, opts = {})
@@ -56,18 +54,6 @@ module Mopsy
         Mopsy::Rabbit::Queue.new(self.class.queue_name, opts)
       end
       private :maybe_create_queue
-
-      def self.included(base)
-        base.extend ClassMethods
-      end
-
-      module ClassMethods
-        attr_reader :queue_name
-
-        def subscribe(q)
-          @queue_name = q.to_s
-        end
-      end
     end
   end
 end

@@ -1,5 +1,5 @@
 class DumbRpcExample
-  include Mopsy::Handlers::Handler
+  include Mopsy::Handlers::ActionHandler
 
   subscribe 'example.rpc.queue'
 

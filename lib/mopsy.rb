@@ -4,6 +4,8 @@ require 'mopsy/cli'
 require 'mopsy/concerns/logging'
 require 'mopsy/handlers/loader'
 require 'mopsy/handlers/handler'
+require 'mopsy/handlers/action_handler'
+require 'mopsy/handlers/job_handler'
 require 'mopsy/handlers/run_group'
 require 'mopsy/rabbit/queue'
 require 'mopsy/runner'
@@ -16,7 +18,8 @@ module Mopsy
     @logger       = Logger.new(STDOUT)
     @logger.level = Logger::DEBUG
 
-    Handlers::Handler.configure_logger(@logger)
+    Handlers::ActionHandler.configure_logger(@logger)
+    Handlers::JobHandler.configure_logger(@logger)
   end
 
   def conf
