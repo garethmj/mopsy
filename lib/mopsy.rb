@@ -1,6 +1,7 @@
 require 'mopsy/version'
 require 'mopsy/conf'
 require 'mopsy/cli'
+require 'mopsy/errors'
 require 'mopsy/concerns/logging'
 require 'mopsy/handlers/loader'
 require 'mopsy/handlers/handler'

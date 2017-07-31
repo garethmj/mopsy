@@ -25,7 +25,7 @@ module Mopsy
         @channel.prefetch(opts[:prefetch])
 
         exchange_name = opts[:exchange]
-        routing_key   = @opts[:routing_key] || @name
+        routing_key   = opts[:routing_key] || @name
         routing_keys  = [*routing_key]
         @exchange     = @channel.exchange(exchange_name, opts[:exchange_options])
         @queue        = @channel.queue(name, opts[:queue_options])

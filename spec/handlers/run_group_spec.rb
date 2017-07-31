@@ -6,8 +6,9 @@ RSpec.describe Mopsy::Handlers::RunGroup do
   before do
     # A do-nothing handler class for use as a mock type thingy.
     class FakeHandler
-      include Mopsy::Handlers::Handler
-      include Mopsy::Concerns::Logging
+      include Mopsy::Handlers::JobHandler
+
+      subscribe 'fake.queue'
 
       def perform
       end
@@ -38,7 +39,7 @@ RSpec.describe Mopsy::Handlers::RunGroup do
     it 'sends #do_perform to registered handlers' do
       allow_any_instance_of(ServerEngine::BlockingFlag).to receive(:wait_for_set).and_return(true)
       rg.load_handlers
-      expect(rg.handlers.first).to receive(:do_perform)
+      expect(rg.handlers.first).to receive(:run)
       rg.run
     end
   end
