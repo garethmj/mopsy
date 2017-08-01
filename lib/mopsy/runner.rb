@@ -30,7 +30,7 @@ module Mopsy
       conf = {}
       conf.merge!({
         logger:                   Mopsy.logger,
-        #worker_type:              'process',
+        worker_type:              'process',
         worker_classes:           @handlers,
         log_stdout:               false,
         log_stderr:               false

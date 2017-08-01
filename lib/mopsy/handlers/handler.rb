@@ -26,11 +26,8 @@ module Mopsy
         # Send this call off to a thread from the thread pool.
         @pool.post do
           logger.debug {"Handling message from #{@queue.name}"}
-          logger.debug {"From exchange: #{@queue.exchange.inspect}"}
 
           extract_metadata delivery_info, metadata
-
-          logger.debug {"Calling perform on class #{self.class.name}"}
 
           if self.respond_to?(:perform)
             self.perform(delivery_info, metadata, msg)
