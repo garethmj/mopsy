@@ -30,16 +30,15 @@ module Mopsy
       amqp_heartbeat:     30,
 
       # workers
-      timeout_job_after:  5,
-      prefetch:           10,
-      threads:            10,
-      share_threads:      false,
-      ack:                true,
-      heartbeat:          30,
-      hooks:              {},
-      exchange:           'mopsy',
-      exchange_options:   EXCHANGE_OPTION_DEFAULTS,
-      queue_options:       QUEUE_OPTION_DEFAULTS
+      prefetch:         1,
+      threads:          1,
+      share_threads:    false,
+      manual_ack:       true,
+      heartbeat:        30,
+      hooks:            {},
+      exchange:         'mopsy',
+      exchange_options: EXCHANGE_OPTION_DEFAULTS,
+      queue_options:    QUEUE_OPTION_DEFAULTS
     }.freeze
 
 

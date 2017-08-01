@@ -3,7 +3,7 @@ require 'bunny'
 module Mopsy
   module Rabbit
     class Queue
-      attr_reader :channel, :exchange, :name, :opts
+      attr_reader :channel, :exchange, :name, :opts, :bunny
 
       def initialize(name, opts)
         @name = name
@@ -37,13 +37,14 @@ module Mopsy
         end
 
         # Subscribe the handler to the actual Rabbit queue.
-        @consumer = @queue.subscribe(block: false, manual_ack: opts[:ack]) do |delivery_info, metadata, msg|
+        @consumer = @queue.subscribe(block: false, manual_ack: opts[:manual_ack]) do |delivery_info, metadata, msg|
           handler.do_perform(delivery_info, metadata, msg)
         end
       end
 
       def unsubscribe
-        raise NotImplementedError
+        # TODO: better to handle cancel_ok response here?
+        @consumer.cancel
       end
     end
   end

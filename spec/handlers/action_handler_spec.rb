@@ -35,10 +35,15 @@ RSpec.describe Mopsy::Handlers::ActionHandler do
   let(:test_pool) {Concurrent::ImmediateExecutor.new}
   let(:msg_meta) {{ reply_to: 'rpc.reply.queue', correlation_id: 'zzzzz' }}
 
+  describe 'handler configuration' do
+    it 'raises an error when no queue subscription is provided' do
+      expect{BareActionHandler.new(nil, test_pool)}.to raise_error(Mopsy::InvalidHandlerError)
+    end
+  end
+
   describe 'handler execution' do
     it 'should perform the work of a handler' do
       h = BareActionHandler.new(@queue, test_pool)
-
       expect(h.queue.name).to eq(@queue.name)
       expect(h).to receive(:perform).with(nil, msg_meta, "msg")
 
@@ -51,11 +56,17 @@ RSpec.describe Mopsy::Handlers::ActionHandler do
       expect(h.queue.name).to eq('listening.test.queue')
     end
 
-    it 'extracts action metadata' do
+    xit 'extracts action metadata' do
       h = ListeningActionHandler.new(nil, test_pool)
       h.do_perform(nil, msg_meta, "msg")
-
       expect(h.reply_to).to eq('rpc.reply.queue')
+    end
+
+    it 'raises an error when required metadata is missing' do
+      h = ListeningActionHandler.new(nil, test_pool)
+
+      expect {h.do_perform(nil, {}, "msg")}
+        .to raise_error(Mopsy::InvalidActionMessageError, "Action message is missing attribute: reply_to")
     end
   end
 end

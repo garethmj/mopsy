@@ -9,6 +9,7 @@ class DumbRpcExample
     logger.info metadata
     logger.info msg
 
-    (1..20).each { |i| logger.info "DumbRpcExample: doing fake work #{i}"; sleep(0.5) }
+    ack delivery_info
+    reply_with({ status: "OK" })
   end
 end

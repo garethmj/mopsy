@@ -5,7 +5,7 @@ module Mopsy
 
       def initialize
         @stop        = ServerEngine::BlockingFlag.new
-        @worker_pool = Concurrent::FixedThreadPool.new(2)
+        @worker_pool = Concurrent::FixedThreadPool.new(1) # TODO: Pass opts here in order to use opts[:threads]
       end
 
       def load_handlers
@@ -23,7 +23,7 @@ module Mopsy
         load_handlers
 
         @handlers.each do |h|
-          Mopsy.logger.debug { "Starting handler: #{h}" }
+          Mopsy.logger.debug {"Starting handler: #{h}"}
           h.run
         end
 

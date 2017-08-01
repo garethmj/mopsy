@@ -1,3 +1,5 @@
+require 'json'
+
 require 'mopsy/version'
 require 'mopsy/conf'
 require 'mopsy/cli'

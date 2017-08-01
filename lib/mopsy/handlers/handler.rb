@@ -6,12 +6,16 @@ module Mopsy
       def initialize(queue = nil, pool = nil, opts = {})
         # There's really no point in carrying on if no one bothered to supply a queue of some sort.
         unless self.class.queue_name || queue
-          raise ArgumentError, "#{self.class.name} must subscribe to a queue, call 'subscribe'"
+          raise Mopsy::InvalidHandlerError, "#{self.class.name} must subscribe to a queue, call 'subscribe'"
         end
 
         opts        = Mopsy.conf.merge(opts)
         @pool       = pool || Concurrent::FixedThreadPool.new(1)
         @queue      = maybe_create_queue(queue, opts)
+      end
+
+      def ack(delivery_info)
+        queue.channel.ack(delivery_info.delivery_tag, false)
       end
 
       #
@@ -22,8 +26,11 @@ module Mopsy
         # Send this call off to a thread from the thread pool.
         @pool.post do
           logger.debug {"Handling message from #{@queue.name}"}
+          logger.debug {"From exchange: #{@queue.exchange.inspect}"}
 
           extract_metadata delivery_info, metadata
+
+          logger.debug {"Calling perform on class #{self.class.name}"}
 
           if self.respond_to?(:perform)
             self.perform(delivery_info, metadata, msg)
@@ -31,6 +38,13 @@ module Mopsy
             logger.error "No action supplied"
           end
         end
+      end
+
+      #
+      # An, as yet, empty stub to be used for encoding messages with some form of plugable encoder.
+      #
+      def encode(msg)
+        msg
       end
 
       #
@@ -49,6 +63,7 @@ module Mopsy
         @pool.shutdown
         @pool.wait_for_termination
         logger.info {"Stopped #{self.class.name}"}
+        @queue.unsubscribe
       end
 
       def maybe_create_queue(q, opts)
