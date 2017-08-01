@@ -34,6 +34,7 @@ module Mopsy
         worker_classes:                         @handlers,
         log_stdout:                             false,
         log_stderr:                             false,
+        unrecoverable_exit_codes:               [5],
         stop_immediately_at_unrecoverable_exit: true
       })
     end

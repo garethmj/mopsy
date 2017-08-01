@@ -37,6 +37,7 @@ module Mopsy
             end
           rescue => e
             logger.error "Worker error: #{e.message}"
+            exit! 5
           end
         end
       end
