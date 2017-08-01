@@ -8,7 +8,7 @@ module Mopsy
     end
 
     def run
-      @se = ServerEngine.create(nil, Handlers::RunGroup) { @runner_conf.reload! }
+      @se = ServerEngine.create(nil, Handlers::RunGroup) {@runner_conf.reload!}
       @se.run
     end
 
@@ -29,11 +29,12 @@ module Mopsy
 
       conf = {}
       conf.merge!({
-        logger:                   Mopsy.logger,
-        worker_type:              'process',
-        worker_classes:           @handlers,
-        log_stdout:               false,
-        log_stderr:               false
+        logger:                                 Mopsy.logger,
+        worker_type:                            'process',
+        worker_classes:                         @handlers,
+        log_stdout:                             false,
+        log_stderr:                             false,
+        stop_immediately_at_unrecoverable_exit: true
       })
     end
   end

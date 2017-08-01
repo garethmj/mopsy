@@ -1,5 +1,3 @@
-require 'bunny'
-
 module Mopsy
   module Rabbit
     class Queue

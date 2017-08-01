@@ -1,3 +1,4 @@
+require 'bunny'
 require 'json'
 
 require 'mopsy/version'

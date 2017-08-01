@@ -1,3 +1,5 @@
+require 'pry-byebug'
+
 class DumbRpcExample
   include Mopsy::Handlers::ActionHandler
 
