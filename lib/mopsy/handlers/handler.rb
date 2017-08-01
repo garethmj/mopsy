@@ -9,9 +9,9 @@ module Mopsy
           raise Mopsy::InvalidHandlerError, "#{self.class.name} must subscribe to a queue, call 'subscribe'"
         end
 
-        opts        = Mopsy.conf.merge(opts)
-        @pool       = pool || Concurrent::FixedThreadPool.new(1)
-        @queue      = maybe_create_queue(queue, opts)
+        opts   = Mopsy.conf.merge(opts)
+        @pool  = pool || Concurrent::FixedThreadPool.new(1)
+        @queue = maybe_create_queue(queue, opts)
       end
 
       def ack(delivery_info)
@@ -27,12 +27,16 @@ module Mopsy
         @pool.post do
           logger.debug {"Handling message from #{@queue.name}"}
 
-          extract_metadata delivery_info, metadata
+          begin
+            extract_metadata delivery_info, metadata
 
-          if self.respond_to?(:perform)
-            self.perform(delivery_info, metadata, msg)
-          else
-            logger.error "No action supplied"
+            if self.respond_to?(:perform)
+              self.perform(delivery_info, metadata, msg)
+            else
+              logger.error "No action supplied"
+            end
+          rescue => e
+            logger.error "Worker error: #{e.message}"
           end
         end
       end
