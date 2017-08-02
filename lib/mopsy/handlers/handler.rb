@@ -37,7 +37,8 @@ module Mopsy
             end
           rescue => e
             logger.error "Worker error: #{e.message}"
-            exit! 5
+            #exit! 5
+            raise
           end
         end
       end
@@ -74,6 +75,20 @@ module Mopsy
       end
 
       private :maybe_create_queue
+
+      # Class methods
+      #
+      def self.included(base)
+        base.extend ClassMethods
+      end
+
+      module ClassMethods
+        attr_reader :queue_name
+
+        def subscribe(q)
+          @queue_name = q.to_s
+        end
+      end
     end
   end
 end

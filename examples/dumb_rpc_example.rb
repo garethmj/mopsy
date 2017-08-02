@@ -1,7 +1,6 @@
 require 'pry-byebug'
 
-class DumbRpcExample
-  include Mopsy::Handlers::ActionHandler
+class DumbRpcExample < Mopsy::Handlers::ActionHandler
 
   subscribe 'example.rpc.queue'
 

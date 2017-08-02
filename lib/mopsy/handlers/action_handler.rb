@@ -1,19 +1,25 @@
+require 'pry-byebug'
+
 module Mopsy
   module Handlers
-    module ActionHandler
+    class ActionHandler
       include Mopsy::Concerns::Logging
       include Mopsy::Handlers::Handler
+      include Mopsy::Rabbit::MessageValidator
+
+      def initialize(queue, pool, opts = {})
+        super(queue, pool, opts)
+        @missing = []
+      end
 
       # Find all the necessary metadata needed for an RPC message.
       #
       def extract_metadata(delivery_info, metadata)
-        @reply_to       = metadata[:reply_to]
-        @correlation_id = metadata[:correlation_id]
+        must_set metadata, :correlation_id
+        must_set metadata, :reply_to
+        must_set delivery_info, :delivery_tag
 
-        raise Mopsy::InvalidActionMessageError, "Action message is missing attribute reply_to" unless @reply_to
-        raise Mopsy::InvalidActionMessageError, "Action message is missing attribute correlation_id" unless @correlation_id
-
-        logger.debug {"Message correlation-id: #{@correlation_id}, reply-to: #{@reply_to}"}
+        raise Mopsy::InvalidActionMessageError, "Action message is missing attributes: #{@missing.join(', ')}" unless @missing.empty?
       end
 
       # Reply to the :reply_to field in the RPC message using the :correlation_id
@@ -22,36 +28,15 @@ module Mopsy
         yield(msg) if block_given?
 
         props = {
-          routing_key:    @reply_to,
-          correlation_id: @correlation_id,
-          timestamp:      Time.now.to_i,
-          headers:        {
-            retry_count: 0
-          }
+          routing_key:    reply_to,
+          correlation_id: correlation_id,
+          timestamp:      Time.now.to_i
         }
 
-        begin
-          self.queue.exchange.publish(
-            msg.to_json,
-            props
-          )
-        rescue Bunny::ChannelLevelException => e
-          logger.debug "Trapped exception: #{e.message}"
-        end
-      end
-
-      # Class methods
-      #
-      def self.included(base)
-        base.extend ClassMethods
-      end
-
-      module ClassMethods
-        attr_reader :queue_name
-
-        def subscribe(q)
-          @queue_name = q.to_s
-        end
+        self.queue.exchange.publish(
+          msg.to_json,
+          props
+        )
       end
     end
   end
