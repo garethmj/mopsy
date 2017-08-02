@@ -14,8 +14,13 @@ module Mopsy
         @queue = maybe_create_queue(queue, opts)
       end
 
-      def ack(delivery_info)
-        queue.channel.ack(delivery_info.delivery_tag, false)
+      def ack
+        unless @delivery_tag
+          logger.error "Unable to ack message from handler with no delivery_tag."
+          return
+        end
+
+        queue.channel.ack(self.delivery_tag, false)
       end
 
       #
@@ -28,7 +33,8 @@ module Mopsy
           logger.debug {"Handling message from #{@queue.name}"}
 
           begin
-            extract_metadata delivery_info, metadata
+            # Bunny::MessageProperties only partly acts like a hash (responds to [] but nothing else). Maybe wrap it? :-\
+            extract_metadata delivery_info.to_hash, metadata.to_hash
 
             if self.respond_to?(:perform)
               self.perform(delivery_info, metadata, msg)

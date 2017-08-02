@@ -7,19 +7,19 @@ module Mopsy
       include Mopsy::Handlers::Handler
       include Mopsy::Rabbit::MessageValidator
 
-      def initialize(queue, pool, opts = {})
-        super(queue, pool, opts)
-        @missing = []
-      end
-
       # Find all the necessary metadata needed for an RPC message.
+      #
+      # @param delivery_info [Hash] The message info (currently only Bunny::MessageProperties) represented as a Hash.
+      # @param metadata [Hash] The message metadata - as above.
       #
       def extract_metadata(delivery_info, metadata)
         must_set metadata, :correlation_id
         must_set metadata, :reply_to
         must_set delivery_info, :delivery_tag
 
-        raise Mopsy::InvalidActionMessageError, "Action message is missing attributes: #{@missing.join(', ')}" unless @missing.empty?
+        unless @missing.empty?
+          raise Mopsy::InvalidActionMessageError, "Action message is missing attributes: #{@missing.join(', ')}"
+        end
       end
 
       # Reply to the :reply_to field in the RPC message using the :correlation_id

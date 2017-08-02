@@ -10,7 +10,7 @@ class DumbRpcExample < Mopsy::Handlers::ActionHandler
     logger.info metadata
     logger.info msg
 
-    ack delivery_info
+    ack
     reply_with({ status: "OK" })
   end
 end
