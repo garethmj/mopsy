@@ -1,5 +1,3 @@
-require 'pry-byebug'
-
 class DumbRpcExample < Mopsy::Handlers::ActionHandler
 
   subscribe 'example.rpc.queue'
