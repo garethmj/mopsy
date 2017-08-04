@@ -4,6 +4,10 @@ require 'mopsy/config'
 RSpec.describe Mopsy::Config do
   context 'configure' do
 
+    before(:each) do
+      Mopsy::Config.reset!
+    end
+
     it 'should be configurable with a block' do
       conf = Mopsy::Config.configure do |c|
         c.heartbeat = 500
