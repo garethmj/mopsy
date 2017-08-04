@@ -1,35 +1,20 @@
-require 'pry-byebug'
-
 module Mopsy
   class Config
 
-    # This whole thing is backed by a Hash. The idea being we get to avoid OpenStruct/Hashie etc.
-    @conf     = {}
     @defaults = {}
 
+    attr_reader :conf
+
     def initialize
-      self.class.defaults = self.class.conf.dup
+      @conf = self.class.defaults.dup
     end
 
     def [](key)
-      self.class.conf[key]
+      self.conf[key]
     end
 
     def []=(key, val)
-      self.class.conf[key] = val
-    end
-
-    def coerce(name, type, val)
-      case type
-        when :boolean then
-          to_bool val
-        when :integer then
-          val.to_i
-        when :string then
-          val.to_s
-        else
-          raise ArgumentError, "Failed to coerce setting '#{name}' to type '#{type}'"
-      end
+      self.conf[key] = val
     end
 
     def merge!(other_hash, &block)
@@ -54,16 +39,21 @@ module Mopsy
       !(value.nil? || value == '' || value =~ /^(false|f|no|n|0)$/i || value == false)
     end
 
-    def self.conf
-      @conf
-    end
-
     def self.defaults
       @defaults
     end
 
-    def self.defaults=(hsh)
-      @defaults = hsh
+    def self.coerce(name, type, val)
+      case type
+        when :boolean then
+          to_bool val
+        when :integer then
+          val.to_i
+        when :string then
+          val.to_s
+        else
+          raise ArgumentError, "Failed to coerce setting '#{name}' to type '#{type}'"
+      end
     end
 
     def self.configure
@@ -72,26 +62,27 @@ module Mopsy
       conf
     end
 
-    def self.reset!
-      @conf = @defaults.dup
+    def self.key_for(attr)
+      key = attr.to_s.gsub('.', '_').upcase
+      "MOPSY_#{key}"
     end
 
-    def self.setting(name, type = :hash, default = {}, subconf = nil, &block)
-      conf              = subconf || @conf
-      conf[name.to_sym] = default
+    def self.setting(name, type, default)
+      @defaults[name.to_sym] = try_env_var(name, type)
+      @defaults[name.to_sym] ||= default
 
       define_method(:"#{name}") do
-        return conf[name.to_sym]
+        return self.conf[name.to_sym]
       end
 
       define_method(:"#{name}=") do |val|
-        conf[name.to_sym] = coerce(name, type, val)
+        self.conf[name.to_sym] = self.class.coerce(name, type, val)
       end
+    end
 
-      if block_given?
-        conf[name.to_sym] = Mopsy::Config.new
-        block.call conf[name.to_sym]
-      end
+    def self.try_env_var(name, type)
+      env = ENV.fetch(key_for(name), nil)
+      env.nil? ? nil : coerce(name, type, env)
     end
 
     private_class_method :setting
@@ -102,15 +93,6 @@ module Mopsy
     setting :manual_ack, :boolean, true
     setting :heartbeat, :integer, 30
 
-    setting :exchange_options do |c|
-      setting :name, :string, 'mopsy', c
-      setting :type, :string, :direct, c
-      setting :durable, :boolean, true, c
-      setting :auto_delete, :boolean, false, c
-      setting :arguments, :hash, {}, c
-    end
-
-    setting :queue_options do |c|
-    end
+    setting :exchange_name, :string, "mopsy"
   end
 end

@@ -2,11 +2,7 @@ require 'spec_helper'
 require 'mopsy/config'
 
 RSpec.describe Mopsy::Config do
-  describe 'configure' do
-
-    before do
-      Mopsy::Config.reset!
-    end
+  context 'configure' do
 
     it 'should be configurable with a block' do
       conf = Mopsy::Config.configure do |c|
@@ -36,7 +32,24 @@ RSpec.describe Mopsy::Config do
 
     it 'can be accessed with []' do
       c = Mopsy::Config.new
-      expect(c[:exchange_options][:name]).to eq("mopsy")
+      expect(c[:exchange_name]).to eq("mopsy")
+    end
+
+    it 'must be possible to create independent configs' do
+      c = Mopsy::Config.new
+      d = Mopsy::Config.new
+      c.heartbeat = 100
+      expect(d.heartbeat).to eq(30)
+      expect(c.heartbeat).to eq(100)
+    end
+
+    context 'for an attribute set in ENV' do
+
+      it 'returns the value from the ENV var' do
+        # See ENV var set in spec_helper.rb. This is due to ENV set-up happening when the class is loaded.
+        c = Mopsy::Config.new
+        expect(c.prefetch).to eq(1000)
+      end
     end
   end
 end
