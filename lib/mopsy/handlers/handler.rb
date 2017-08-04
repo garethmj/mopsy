@@ -9,7 +9,7 @@ module Mopsy
           raise Mopsy::InvalidHandlerError, "#{self.class.name} must subscribe to a queue, call 'subscribe'"
         end
 
-        opts   = Mopsy.conf.merge(opts)
+        opts   = Mopsy.conf.merge!(opts)
         @pool  = pool || Concurrent::FixedThreadPool.new(1)
         @queue = maybe_create_queue(queue, opts)
       end

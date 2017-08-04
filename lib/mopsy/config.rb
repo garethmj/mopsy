@@ -7,7 +7,9 @@ module Mopsy
     attr_reader :conf
 
     def initialize
-      @conf = self.class.conf.dup
+      @conf         = self.class.conf.dup
+      @conf[:amqp]  = ENV.fetch('RABBITMQ_URL', 'amqp://guest:guest@localhost:5672')
+      @conf[:vhost] = AMQ::Settings.parse_amqp_url(@conf[:amqp]).fetch(:vhost, '/')
     end
 
     def [](key)
@@ -42,6 +44,7 @@ module Mopsy
       end
 
       def conf
+        @conf = @defaults.dup if @conf.empty?
         @conf
       end
 
@@ -49,10 +52,14 @@ module Mopsy
         case type
           when :boolean then
             to_bool val
+          when :hash then
+            val.to_h
           when :integer then
             val.to_i
           when :string then
             val.to_s
+          when :symbol then
+            val.to_sym
           else
             raise ArgumentError, "Failed to coerce setting '#{name}' to type '#{type}'"
         end
@@ -99,12 +106,27 @@ module Mopsy
 
     private_class_method :setting
 
-    setting :prefetch, :integer, 1
-    setting :threads, :integer, 1
-    setting :share_threads, :boolean, false
-    setting :manual_ack, :boolean, true
+    setting :amqp, :string, "amqp://guest:guest@localhost:5672"
     setting :heartbeat, :integer, 30
+    setting :manual_ack, :boolean, true
+    setting :prefetch, :integer, 1
+    setting :share_threads, :boolean, false
+    setting :threads, :integer, 1
+    setting :vhost, :string, "/"
 
     setting :exchange_name, :string, "mopsy"
+    setting :exchange_options, :hash, {
+      type:        :direct,
+      durable:     true,
+      auto_delete: false,
+      arguments:   {}
+    }
+
+    setting :queue_options, :hash, {
+      durable:     true,
+      auto_delete: false,
+      exclusive:   false,
+      arguments:   {}
+    }
   end
 end

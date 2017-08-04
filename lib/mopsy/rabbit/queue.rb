@@ -14,7 +14,7 @@ module Mopsy
             {
               vhost:      opts[:vhost],
               heartbeat:  opts[:heartbeat],
-              properties: opts.fetch(:properties, {}),
+              properties: opts[:properties],
               logger:     Mopsy.logger
             })
             .tap { |b| b.start }
@@ -22,7 +22,7 @@ module Mopsy
         @channel = @bunny.create_channel
         @channel.prefetch(opts[:prefetch])
 
-        exchange_name = opts[:exchange]
+        exchange_name = opts[:exchange_name]
         routing_key   = opts[:routing_key] || @name
         routing_keys  = [*routing_key]
         @exchange     = @channel.exchange(exchange_name, opts[:exchange_options])

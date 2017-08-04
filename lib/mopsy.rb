@@ -1,8 +1,9 @@
 require 'bunny'
 require 'json'
+require 'pry-byebug'
 
 require 'mopsy/version'
-require 'mopsy/conf'
+require 'mopsy/config'
 require 'mopsy/cli'
 require 'mopsy/errors'
 require 'mopsy/concerns/logging'
@@ -19,7 +20,7 @@ module Mopsy
   extend self
 
   def configure
-    @conf         = Mopsy::Conf.new
+    @conf         = Mopsy::Config.new
     @logger       = Logger.new(STDOUT)
     @logger.level = Logger::DEBUG
 
