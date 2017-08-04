@@ -41,7 +41,6 @@ module Mopsy
       queue_options:    QUEUE_OPTION_DEFAULTS
     }.freeze
 
-
     def initialize
       @hash         = DEFAULTS.dup
       @hash[:amqp]  = ENV.fetch('RABBITMQ_URL', 'amqp://guest:guest@localhost:5672')
