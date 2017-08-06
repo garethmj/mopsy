@@ -1,19 +1,16 @@
 module Mopsy
   module Handlers
-    module JobHandler
+    class JobHandler
       include Mopsy::Concerns::Logging
       include Mopsy::Handlers::Handler
+      include Mopsy::Rabbit::MessageValidator
 
-      def self.included(base)
-        base.extend ClassMethods
-      end
-
-      module ClassMethods
-        attr_reader :queue_name
-
-        def subscribe(q)
-          @queue_name = q.to_s
-        end
+      # Find all the necessary metadata needed for an RPC message.
+      #
+      # @param delivery_info [Hash] The message info (currently only Bunny::MessageProperties) represented as a Hash.
+      # @param metadata [Hash] The message metadata - as above.
+      #
+      def extract_metadata(delivery_info, metadata)
       end
     end
   end

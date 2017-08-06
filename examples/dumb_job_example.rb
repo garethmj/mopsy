@@ -1,5 +1,4 @@
-class DumbJobExample
-  include Mopsy::Handlers::JobHandler
+class DumbJobExample < Mopsy::Handlers::JobHandler
 
   subscribe 'example.work.queue'
 
@@ -10,5 +9,7 @@ class DumbJobExample
     logger.info msg
 
     (1..20).each { |i| logger.info "DumbJobExample: doing fake work #{i}"; sleep(0.5) }
+
+    ack
   end
 end

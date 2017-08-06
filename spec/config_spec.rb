@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'mopsy/config'
 
 RSpec.describe Mopsy::Config do
   context 'configure' do
@@ -54,9 +53,25 @@ RSpec.describe Mopsy::Config do
       expect(c.heartbeat).to eq(100)
     end
 
+    it 'should retain user config across instances' do
+      c = Mopsy::Config.configure do |c|
+        c.heartbeat = 200
+      end
+      d = Mopsy::Config.new
+      d.exchange_name = "different"
+
+      expect(c.heartbeat).to eq(200)
+      expect(d.heartbeat).to eq(200)
+      expect(c.exchange_name).to eq("mopsy")
+      expect(d.exchange_name).to eq("different")
+
+      d.heartbeat = 300
+      expect(d.heartbeat).to eq(300)
+    end
+
     context 'for an attribute set in ENV' do
 
-      xit 'returns the value from the ENV var' do
+      it 'returns the value from the ENV var' do
         # See ENV var set in spec_helper.rb. This is due to ENV set-up happening when the class is loaded.
         c = Mopsy::Config.new
         expect(c.prefetch).to eq(1000)

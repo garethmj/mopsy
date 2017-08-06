@@ -1,3 +1,6 @@
+# See config_spec.rb
+ENV['MOPSY_PREFETCH'] = "1000"
+
 require 'bundler/setup'
 require 'mopsy'
 
@@ -12,6 +15,3 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
-
-# See config_spec.rb
-ENV['MOPSY_PREFETCH'] = "1000"
